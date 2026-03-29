@@ -3,141 +3,143 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BPM Counter</title>
+  <title>CLhouse Vinyl BPM Counter</title>
   <style>
     :root {
-      --bg: #0f1115;
-      --card: #181c23;
-      --line: #2b313d;
-      --text: #f3f5f7;
-      --muted: #98a2b3;
-      --accent: #4f8cff;
-      --accent-pressed: #2f6fe6;
-      --danger: #2a2f3a;
+      --bg: #0a0a0a;
+      --panel: #121212;
+      --display: #000000;
+      --text: #eaeaea;
+      --muted: #888;
+      --accent: #ff3b3b;
+      --accent-dark: #a80000;
+      --line: #2a2a2a;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(180deg, #0b0d11, #12161d);
+      background: radial-gradient(circle at top, #111, #000);
       color: var(--text);
       font-family: Arial, Helvetica, sans-serif;
-      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
     }
 
     .app {
       width: 100%;
       max-width: 420px;
-      background: var(--card);
+      background: linear-gradient(180deg, #141414, #0a0a0a);
       border: 1px solid var(--line);
-      border-radius: 24px;
-      padding: 24px;
-      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+      border-radius: 22px;
+      padding: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
     }
 
     h1 {
-      margin: 0 0 8px;
-      font-size: 28px;
       text-align: center;
+      font-size: 20px;
+      letter-spacing: 2px;
+      margin-bottom: 18px;
+      color: var(--muted);
     }
 
-    p {
-      margin: 0 0 24px;
+    .display {
+      background: var(--display);
+      border: 2px solid #222;
+      border-radius: 12px;
+      padding: 20px;
       text-align: center;
-      color: var(--muted);
-      line-height: 1.5;
+      margin-bottom: 20px;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
     }
 
     .bpm {
-      text-align: center;
       font-size: 56px;
-      font-weight: 700;
-      margin-bottom: 6px;
+      font-weight: 900;
+      letter-spacing: 2px;
     }
 
     .label {
-      text-align: center;
       color: var(--muted);
-      margin-bottom: 22px;
+      font-size: 12px;
+      margin-top: 6px;
     }
 
-    .tap-btn,
-    .reset-btn {
+    .tap {
       width: 100%;
+      height: 140px;
+      border-radius: 18px;
       border: none;
-      border-radius: 20px;
-      cursor: pointer;
-      font-weight: 700;
-    }
-
-    .tap-btn {
-      min-height: 130px;
-      font-size: 42px;
-      background: var(--accent);
+      background: linear-gradient(180deg, #ff3b3b, #a80000);
       color: white;
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(255,0,0,0.4);
       margin-bottom: 14px;
     }
 
-    .tap-btn:active {
-      background: var(--accent-pressed);
-      transform: scale(0.985);
+    .tap:active {
+      transform: scale(0.97);
+      background: linear-gradient(180deg, #ff5c5c, #c40000);
     }
 
-    .reset-btn {
-      min-height: 54px;
-      font-size: 16px;
-      background: var(--danger);
-      color: var(--text);
+    .reset {
+      width: 100%;
+      height: 50px;
+      border-radius: 12px;
       border: 1px solid var(--line);
+      background: #1a1a1a;
+      color: var(--text);
+      font-size: 14px;
+      cursor: pointer;
     }
 
     .hint {
-      margin-top: 16px;
-      text-align: center;
+      margin-top: 14px;
+      font-size: 12px;
       color: var(--muted);
-      font-size: 14px;
-      line-height: 1.45;
+      text-align: center;
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <h1>BPM Counter</h1>
-    <p>Mehrmals im Takt tippen. Nach ein paar Taps wird die BPM berechnet.</p>
+    <h1>CLHOUSE VINYL BPM COUNTER</h1>
 
-    <div class="bpm" id="bpmValue">--</div>
-    <div class="label" id="tapCount">Noch keine Taps</div>
+    <div class="display">
+      <div class="bpm" id="bpm">--</div>
+      <div class="label" id="info">Tap starten</div>
+    </div>
 
-    <button class="tap-btn" id="tapBtn">TAP</button>
-    <button class="reset-btn" id="resetBtn">Reset</button>
+    <button class="tap" id="tap">TAP</button>
+    <button class="reset" id="reset">RESET</button>
 
-    <div class="hint">Tipp: Gleichmäßig 4–8 mal tippen für einen stabileren Wert.</div>
+    <div class="hint">Mehrmals im Beat tippen (4–8 Taps)</div>
   </div>
 
   <script>
-    const tapBtn = document.getElementById("tapBtn");
-    const resetBtn = document.getElementById("resetBtn");
-    const bpmValue = document.getElementById("bpmValue");
-    const tapCount = document.getElementById("tapCount");
+    const tapBtn = document.getElementById('tap');
+    const resetBtn = document.getElementById('reset');
+    const bpmEl = document.getElementById('bpm');
+    const infoEl = document.getElementById('info');
 
     let taps = [];
 
-    function resetCounter() {
+    function reset() {
       taps = [];
-      bpmValue.textContent = "--";
-      tapCount.textContent = "Noch keine Taps";
+      bpmEl.textContent = '--';
+      infoEl.textContent = 'Reset';
     }
 
-    function calculateBpm() {
+    function calc() {
       if (taps.length < 2) {
-        bpmValue.textContent = "--";
-        tapCount.textContent = `${taps.length} Tap`;
+        infoEl.textContent = taps.length + ' Tap';
         return;
       }
 
@@ -146,39 +148,32 @@
         intervals.push(taps[i] - taps[i - 1]);
       }
 
-      const averageInterval =
-        intervals.reduce((sum, value) => sum + value, 0) / intervals.length;
+      const avg = intervals.reduce((a, b) => a + b) / intervals.length;
+      const bpm = Math.round(60000 / avg);
 
-      const bpm = Math.round(60000 / averageInterval);
-
-      bpmValue.textContent = bpm;
-      tapCount.textContent = `${taps.length} Taps gespeichert`;
+      bpmEl.textContent = bpm;
+      infoEl.textContent = taps.length + ' Taps';
     }
 
-    tapBtn.addEventListener("click", () => {
+    tapBtn.addEventListener('click', () => {
       const now = Date.now();
 
-      if (taps.length > 0) {
-        const lastTap = taps[taps.length - 1];
-        if (now - lastTap > 2000) {
-          taps = [];
-        }
+      if (taps.length && now - taps[taps.length - 1] > 2000) {
+        taps = [];
       }
 
       taps.push(now);
 
-      if (taps.length > 8) {
-        taps.shift();
-      }
+      if (taps.length > 8) taps.shift();
 
-      calculateBpm();
+      calc();
     });
 
-    resetBtn.addEventListener("click", resetCounter);
+    resetBtn.addEventListener('click', reset);
 
-    window.addEventListener("keydown", (event) => {
-      if (event.code === "Space") {
-        event.preventDefault();
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
         tapBtn.click();
       }
     });
