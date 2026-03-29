@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BPM Counter</title>
+  <style>
+    :root {
+      --bg: #0f1115;
+      --card: #181c23;
+      --line: #2b313d;
+      --text: #f3f5f7;
+      --muted: #98a2b3;
+      --accent: #4f8cff;
+      --accent-pressed: #2f6fe6;
+      --danger: #2a2f3a;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg, #0b0d11, #12161d);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      padding: 20px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      text-align: center;
+    }
+
+    p {
+      margin: 0 0 24px;
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .bpm {
+      text-align: center;
+      font-size: 56px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .label {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 22px;
+    }
+
+    .tap-btn,
+    .reset-btn {
+      width: 100%;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .tap-btn {
+      min-height: 130px;
+      font-size: 42px;
+      background: var(--accent);
+      color: white;
+      margin-bottom: 14px;
+    }
+
+    .tap-btn:active {
+      background: var(--accent-pressed);
+      transform: scale(0.985);
+    }
+
+    .reset-btn {
+      min-height: 54px;
+      font-size: 16px;
+      background: var(--danger);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .hint {
+      margin-top: 16px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>BPM Counter</h1>
+    <p>Mehrmals im Takt tippen. Nach ein paar Taps wird die BPM berechnet.</p>
+
+    <div class="bpm" id="bpmValue">--</div>
+    <div class="label" id="tapCount">Noch keine Taps</div>
+
+    <button class="tap-btn" id="tapBtn">TAP</button>
+    <button class="reset-btn" id="resetBtn">Reset</button>
+
+    <div class="hint">Tipp: Gleichmäßig 4–8 mal tippen für einen stabileren Wert.</div>
+  </div>
+
+  <script>
+    const tapBtn = document.getElementById("tapBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const bpmValue = document.getElementById("bpmValue");
+    const tapCount = document.getElementById("tapCount");
+
+    let taps = [];
+
+    function resetCounter() {
+      taps = [];
+      bpmValue.textContent = "--";
+      tapCount.textContent = "Noch keine Taps";
+    }
+
+    function calculateBpm() {
+      if (taps.length < 2) {
+        bpmValue.textContent = "--";
+        tapCount.textContent = `${taps.length} Tap`;
+        return;
+      }
+
+      const intervals = [];
+      for (let i = 1; i < taps.length; i++) {
+        intervals.push(taps[i] - taps[i - 1]);
+      }
+
+      const averageInterval =
+        intervals.reduce((sum, value) => sum + value, 0) / intervals.length;
+
+      const bpm = Math.round(60000 / averageInterval);
+
+      bpmValue.textContent = bpm;
+      tapCount.textContent = `${taps.length} Taps gespeichert`;
+    }
+
+    tapBtn.addEventListener("click", () => {
+      const now = Date.now();
+
+      if (taps.length > 0) {
+        const lastTap = taps[taps.length - 1];
+        if (now - lastTap > 2000) {
+          taps = [];
+        }
+      }
+
+      taps.push(now);
+
+      if (taps.length > 8) {
+        taps.shift();
+      }
+
+      calculateBpm();
+    });
+
+    resetBtn.addEventListener("click", resetCounter);
+
+    window.addEventListener("keydown", (event) => {
+      if (event.code === "Space") {
+        event.preventDefault();
+        tapBtn.click();
+      }
+    });
+  </script>
+</body>
+</html>
